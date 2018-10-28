@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 
 from app.error_handler import InvalidUsage
-from app.validate import validate_user, empty
 from app.models.database import Database
 from flask import current_app as app
 
@@ -20,3 +19,9 @@ def create_user():
     db.create_user(name, username, password)
     return jsonify({'message': f'{username} has successfully been added to staff'}), 200
 
+
+@user.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
