@@ -2,24 +2,14 @@ import unittest
 import json
 
 from app import create_app
-from app.models.model import products
+from app.models.database import Database
 
 
 class TestProductApi(unittest.TestCase):
     def setUp(self):
         app = create_app("testing")
         self.app = app.test_client()
-        self.products = products
-
-    # Test cases for add products
-
-    def test_add_products(self):
-        post_signup = dict(name="Fahad", price=12, quantity=12)
-        response = self.app.post('/api/v1/products', json=post_signup)
-        assert response.status_code == 201
-        assert response.headers["Content-Type"] == "application/json"
-        assert "Fahad" in str(response.data)
-        assert "Fahad" in [product.name for product in self.products]
+        self.db = Database(app.config['DATABASE_URI'])
 
     def test_product_content_type(self):
         post_signup = dict(name="Fahad", price=12)
@@ -83,5 +73,3 @@ class TestProductApi(unittest.TestCase):
         assert response2.headers["Content-Type"] == "application/json"
         assert "product of ID 1 does not exist" in str(response2.data)
 
-    def tearDown(self):
-        self.products.clear()

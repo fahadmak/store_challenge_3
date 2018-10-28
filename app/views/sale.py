@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify, request
 
-from app.models.model import Sale, sales, products
-from app.error_handler import InvalidUsage, InternalServerError
-
+from app.models.model import Sale, sales
+from app.error_handler import InvalidUsage
 from app.utils import find_product
 
 
