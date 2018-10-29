@@ -5,7 +5,7 @@ meant for use in a single store.
 
 [![codecov](https://codecov.io/gh/fahadmak/store_manager_api/branch/develop/graph/badge.svg)](https://codecov.io/gh/fahadmak/store_manager_api)
 [![Coverage Status](https://coveralls.io/repos/github/fahadmak/store_challenge_3/badge.svg?branch=develop)](https://coveralls.io/github/fahadmak/store_challenge_3?branch=develop)
-[![Maintainability](https://api.codeclimate.com/v1/badges/6b72aeef25fc7604088b/maintainability)](https://codeclimate.com/github/fahadmak/store_manager_api/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/31f1ccb43fa804d72b7f/maintainability)](https://codeclimate.com/github/fahadmak/store_challenge_3/maintainability)
 [![Build Status](https://travis-ci.org/fahadmak/store_challenge_3.svg?branch=develop)](https://travis-ci.org/fahadmak/store_challenge_3)
 
 **Features of the Application**
