@@ -2,7 +2,6 @@ import psycopg2
 import sys
 from urllib.parse import urlparse
 
-
 class Database:
 
     def __init__(self, url=None):

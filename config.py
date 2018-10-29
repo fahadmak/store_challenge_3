@@ -2,7 +2,7 @@ class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True
-    SECRET_KEY = "bigsecret"
+    JWT_SECRET_KEY = "bigsecret"
     DATABASE_URI = 'postgresql://postgres:maka1997@localhost/store'
 
 
