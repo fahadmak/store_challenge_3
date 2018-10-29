@@ -19,4 +19,3 @@ class TestDevelopmentConfig(unittest.TestCase):
         self.assertTrue(
             app.config['DATABASE_URI'] == 'postgresql://postgres:maka1997@localhost/testdb'
         )
-
