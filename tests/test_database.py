@@ -12,34 +12,34 @@ class TestProductApi(unittest.TestCase):
 
     def test_insert_user(self):
         inserted = self.db.create_user('fahad', 'manny', 'manny09')
-        retrieve = self.db.get_item('users', 'username', 'manny')
+        retrieve = self.db.find('users', 'username', 'manny')
         assert retrieve[2] == 'manny'
 
     def test_insert_category(self):
         insert = self.db.create_user('fahad', 'manny', 'manny09')
         inserted = self.db.add_category('food', 1)
-        retrieve = self.db.get_item('categories', 'category_name', 'food')
+        retrieve = self.db.find('categories', 'category_name', 'food')
         assert retrieve[1] == 'food'
 
     def test_insert_product(self):
         insert = self.db.create_user('fahad', 'manny', 'manny09')
         inserted = self.db.add_category('food', 1)
         final_insert = self.db.add_product('beans', 200, 300, 1, 1)
-        retrieve = self.db.get_item('products', 'product_name', 'beans')
+        retrieve = self.db.find('products', 'product_name', 'beans')
         assert retrieve[1] == 'beans'
 
     def test_modify_category(self):
         insert = self.db.create_user('fahad', 'manny', 'manny09')
         inserted = self.db.add_category('food', 1)
         modify = self.db.modify_category('junk', 1)
-        retrieve = self.db.get_item('categories', 'category_id', 1)
+        retrieve = self.db.find('categories', 'category_id', 1)
         assert retrieve[1] == 'junk'
 
     def test_delete_category(self):
         insert = self.db.create_user('fahad', 'manny', 'manny09')
         inserted = self.db.add_category('food', 1)
         delete = self.db.delete_category(1)
-        retrieve = self.db.get_item('categories', 'category_id', 1)
+        retrieve = self.db.find('categories', 'category_id', 1)
         assert retrieve is None
 
     def test_modify_product(self):
@@ -47,7 +47,7 @@ class TestProductApi(unittest.TestCase):
         inserted = self.db.add_category('food', 1)
         final_insert = self.db.add_product('beans', 200, 300, 1, 1)
         modify = self.db.modify_product('junk', 20, 400, 1)
-        retrieve = self.db.get_item('products', 'product_id', 1)
+        retrieve = self.db.find('products', 'product_id', 1)
         assert retrieve[1] == 'junk'
 
     def test_delete_product(self):
@@ -55,7 +55,7 @@ class TestProductApi(unittest.TestCase):
         inserted = self.db.add_category('food', 1)
         final_insert = self.db.add_product('beans', 200, 300, 1, 1)
         delete = self.db.delete_product(1)
-        retrieve = self.db.get_item('products', 'product_id', 1)
+        retrieve = self.db.find('products', 'product_id', 1)
         assert retrieve is None
 
     def tearDown(self):
