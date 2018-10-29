@@ -12,7 +12,8 @@ install:
   - pip install pytest-cov
   - pip install coveralls
   - pip install codecov
-
+before_script:
+  - psql -c 'create database testdb;' -U postgres
 script:
   - pytest --cov=app/ --cov-report term-missing
   - coveralls
