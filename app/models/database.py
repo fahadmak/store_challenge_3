@@ -23,7 +23,8 @@ class Database:
                     user_id SERIAL PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     username VARCHAR(255) NOT NULL UNIQUE,
-                    password VARCHAR(255) NOT NULL
+                    password VARCHAR(255) NOT NULL,
+                    is_admin BOOLEAN DEFAULT FALSE
                 )
                 """,
                 """
@@ -51,6 +52,11 @@ class Database:
                     REFERENCES users (user_id)
                     ON UPDATE CASCADE ON DELETE CASCADE
                 )
+                """,
+                """
+                INSERT INTO users (name, username, password, is_admin) 
+                SELECT * FROM (SELECT 'admin', 'admin', 'admin', TRUE) 
+                AS tmp WHERE NOT EXISTS (SELECT name FROM users WHERE username = 'admin') LIMIT 1;
                 """
                 )
 
@@ -116,9 +122,9 @@ class Database:
         cur.execute(query)
         self.conn.commit()
 
-    def get_item(self, *args):
+    def find(self, table, column, value):
         """select an item by id in a respective table"""
-        query = f"SELECT * FROM {args[0]} WHERE {args[1]} = '{args[2]}';"
+        query = f"SELECT * FROM {table} WHERE {column} = '{value}'"
         cur = self.conn.cursor()
         cur.execute(query)
         result = cur.fetchone()
