@@ -19,12 +19,3 @@ class TestDevelopmentConfig(unittest.TestCase):
         self.assertTrue(
             app.config['DATABASE_URI'] == 'postgresql://postgres:maka1997@localhost/testdb'
         )
-
-    def test_app_is_production(self):
-        app = create_app("production")
-        self.assertTrue(app.config['DEBUG'] is False)
-        self.assertTrue(app.config['TESTING'] is False)
-        self.assertTrue(
-            app.config['DATABASE_URI'] == 'postgresql://postgres:maka1997@localhost/storedb'
-        )
-
