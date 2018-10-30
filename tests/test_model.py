@@ -8,8 +8,8 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         self.user = User
         self.users = users
-        self.user1 = self.user(1, "benwa", "real", "real")
-        self.user2 = self.user(2, "meshu", "trdff", "tres")
+        self.user1 = self.user(1, "benwa", "real", "real", "tuesday 2018", True)
+        self.user2 = self.user(2, "meshu", "trdff", "tres", "tuesday 2018", True)
         self.users = [self.user1, self.user2]
         self.product = Product
         self.products = products
