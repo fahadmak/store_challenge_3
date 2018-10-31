@@ -1,6 +1,11 @@
 import psycopg2
 import sys
 from urllib.parse import urlparse
+from app.models.user_model import User
+from app.models.product_model import Product, products
+from app.models.category_model import Category, categories
+from app.models.sale_model import Sale, sales
+
 
 class Database:
 
@@ -23,6 +28,7 @@ class Database:
                     name VARCHAR(255) NOT NULL,
                     username VARCHAR(255) NOT NULL UNIQUE,
                     password VARCHAR(255) NOT NULL,
+                    date_created TIMESTAMPTZ DEFAULT NOW(),
                     is_admin BOOLEAN DEFAULT FALSE
                 )
                 """,
@@ -42,6 +48,7 @@ class Database:
                     product_name VARCHAR(255) NOT NULL UNIQUE,
                     quantity INTEGER NOT NULL,
                     price INTEGER NOT NULL,
+                    date_added TIMESTAMPTZ DEFAULT NOW(),
                     category_id INTEGER NOT NULL,
                     FOREIGN KEY (category_id)
                     REFERENCES categories (category_id)
@@ -50,6 +57,31 @@ class Database:
                     FOREIGN KEY (user_id)
                     REFERENCES users (user_id)
                     ON UPDATE CASCADE ON DELETE CASCADE
+                )
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS sales (
+                    sale_id SERIAL PRIMARY KEY,
+                    sale_date TIMESTAMPTZ DEFAULT NOW(),
+                    total INTEGER NOT NULL,
+                    user_id INTEGER NOT NULL,
+                    FOREIGN KEY (user_id)
+                    REFERENCES users (user_id)
+                    ON UPDATE CASCADE ON DELETE CASCADE
+                )
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS sold (
+                    product_id INTEGER NOT NULL,
+                    FOREIGN KEY (product_id)
+                    REFERENCES products (product_id)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+                    sale_id INTEGER NOT NULL,
+                    FOREIGN KEY (sale_id)
+                    REFERENCES sales (sale_id)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+                    product_name VARCHAR(255) NOT NULL UNIQUE,
+                    quantity INTEGER NOT NULL                   
                 )
                 """,
                 """
@@ -66,11 +98,45 @@ class Database:
             print('Unable to connect!\n{0}'.format(e))
             sys.exit(1)
 
+    def drop_tables(self, table):
+        """select an item by id in a respective table"""
+        cur = self.conn.cursor()
+        cur.execute("ROLLBACK")
+        cur.execute(f"DROP TABLE {table} CASCADE")
+
     # Queries for the user table
     def create_user(self, name, username, password):
         """Insert an item in a respective table"""
         query = f"INSERT INTO users(name, username, password)\
                             VALUES('{name}', '{username}', '{password}');"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        self.conn.commit()
+
+    def find_user_by_username(self, username):
+        """select an item by id in a respective table"""
+        query = f"SELECT * FROM users WHERE username = '{username}'"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        print(result)
+        if result:
+            user = User(result[0], result[1], result[2], result[3], result[4], result[5])
+            return user
+
+    def find_user_by_id(self, user_id):
+        """select an item by id in a respective table"""
+        query = f"SELECT * FROM users WHERE user_id = {user_id}"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            user = User(result[0], result[1], result[2], result[3], result[4], result[5])
+            return user
+
+    def modify_admin_rights(self, user_id):
+        """Insert an item in a respective table"""
+        query = f"UPDATE  users SET is_admin = TRUE WHERE user_id = {user_id};"
         cur = self.conn.cursor()
         cur.execute(query)
         self.conn.commit()
@@ -97,6 +163,39 @@ class Database:
         cur.execute(query)
         self.conn.commit()
 
+    def find_category_by_category_name(self, category_name):
+        """select an item by id in a respective table"""
+        query = f"SELECT * FROM categories WHERE category_name = '{category_name}'"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            category = Category(result[0], result[1], result[2])
+            return category
+
+    def find_category_by_category_id(self, category_name):
+        """select an item by id in a respective table"""
+        query = f"SELECT * FROM categories WHERE category_id = {category_name}"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            category = Category(result[0], result[1], result[2])
+            return category
+
+    def get_all_categories(self):
+        """select all category in categories table"""
+        query = f"SELECT * FROM categories"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        results = cur.fetchall()
+        if not results:
+            return False
+        for result in results:
+            category = Category(result[0], result[1], result[2])
+            categories.append(category)
+        return categories
+
     # Queries for the product table
     def add_product(self, product_name, quantity, price, user_id, category_id):
         """Insert an product in a respective products table"""
@@ -114,6 +213,14 @@ class Database:
         cur.execute(query)
         self.conn.commit()
 
+    def update_stock(self, quantity, product_id):
+        """Insert an item in a respective table"""
+        query = f"UPDATE  products SET quantity = {quantity}" \
+                f"WHERE product_id = {product_id};"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        self.conn.commit()
+
     def delete_product(self, product_id):
         """Insert an item in a respective table"""
         query = f"DELETE FROM products WHERE product_id = {product_id};"
@@ -121,17 +228,88 @@ class Database:
         cur.execute(query)
         self.conn.commit()
 
-    def find(self, table, column, value):
+    def find_product_by_product_name(self, product_name):
         """select an item by id in a respective table"""
-        query = f"SELECT * FROM {table} WHERE {column} = '{value}'"
+        query = f"SELECT * FROM products WHERE product_name = '{product_name}'"
         cur = self.conn.cursor()
         cur.execute(query)
         result = cur.fetchone()
-        return result
+        if result:
+            product = Product(result[0], result[1], result[2], result[3])
+            return product
 
-    def drop_tables(self, table):
+    def find_product_by_product_id(self, product_id):
         """select an item by id in a respective table"""
+        query = f"SELECT * FROM products WHERE product_id = {product_id}"
         cur = self.conn.cursor()
-        cur.execute("ROLLBACK")
-        cur.execute(f"DROP TABLE {table} CASCADE")
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            product = Product(result[0], result[1], result[2], result[3])
+            return product
+
+    def get_all_products(self):
+        """select all sales records in sales table"""
+        query = f"SELECT * FROM products"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        results = cur.fetchall()
+        if not results:
+            return False
+        for result in results:
+            product = Product(result[0], result[1], result[2], result[3])
+            products.append(product)
+        return products
+
+    # Queries for the sale table
+    def add_sale(self, total, user_id):
+        """Insert an product in a respective products table"""
+        query = f"INSERT INTO sales(total, user_id) " \
+                f"VALUES('{total}', '{user_id}');"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        self.conn.commit()
+
+    def find_sale_by_sale_id(self, sale_id):
+        """select an item by id in a respective table"""
+        query = f"SELECT * FROM sales WHERE sale_id = '{sale_id}'"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            sale = Sale(result[0], result[1], result[2], result[3])
+            return sale
+
+    def find_sale_by_user_id(self, user_id):
+        """select an item by id in a respective table"""
+        query = f"SELECT * FROM sales WHERE user_id = {user_id}"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            sale = Sale(result[0], result[1], result[2], result[3])
+            return sale
+
+    def get_all_sales(self):
+        """select all sales records in sales table"""
+        query = f"SELECT * FROM products"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        results = cur.fetchall()
+        if not results:
+            return False
+        for result in results:
+            sale = Sale(result[0], result[1], result[2], result[3])
+            sales.append(sale)
+        return sales
+
+    # Queries for the sale table
+    def add_sold_item(self, product_name, quantity, product_id, sale_id):
+        """Insert an product in a respective products table"""
+        query = f"INSERT INTO sold(product_name, quantity, product_id, sale_id) " \
+                f"VALUES('{product_name}', {quantity}, {product_id}, {sale_id});"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        self.conn.commit()
+
 
