@@ -21,11 +21,13 @@ class User:
         to_json(self)
             Converts the product instance to a dictionary
     """
-    def __init__(self, user_id, name, username, password):
+    def __init__(self, user_id, name, username, password, date, is_admin):
         self.user_id = user_id
         self.name = name
         self.username = username
         self.password = password
+        self.date = date
+        self.is_admin = is_admin
 
     def __repr__(self):
         """A method to returns the string representation of an object"""
