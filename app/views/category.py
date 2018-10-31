@@ -62,6 +62,23 @@ def modify_category(category_id):
     return jsonify({'message': f'{name} has successfully been modified'}), 200
 
 
+@category.route("/api/v1/categories/<int:category_id>", methods=["DELETE"])
+@jwt_required
+def delete_category(category_id):
+    """A method adds product instance to products list"""
+    db = Database(app.config['DATABASE_URI'])
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 403)
+    found = db.find_category_by_category_id(category_id)
+    if not found:
+        raise InvalidUsage("Category does not exist", 404)
+    db.delete_category(category_id)
+    return jsonify({'message': f'{found.category_name} has been deleted'}), 200
+
 
 @category.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
