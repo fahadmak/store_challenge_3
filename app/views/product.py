@@ -68,6 +68,48 @@ def modify_product(category_id, product_id):
     return jsonify({'message': f'{name} has successfully been modified'}), 200
 
 
+@product.route("/api/v1/categories/<int:category_id>/products/<int:product_id>", methods=["DELETE"])
+@jwt_required
+def delete_product(category_id, product_id):
+    """A method adds product instance to products list"""
+    db = Database(app.config['DATABASE_URI'])
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    print("yes")
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 403)
+    found = db.find_category_by_category_id(category_id)
+    if not found:
+        raise InvalidUsage("Category does not exist", 404)
+    item = db.find_product_by_product_id(product_id)
+    if not item:
+        raise InvalidUsage("product does not exist", 404)
+    db.delete_product(product_id)
+    return jsonify({'message': f'Product has been deleted'}), 200
+
+
+@product.route("/api/v1/categories/<int:category_id>/products/<int:product_id>", methods=["GET"])
+@jwt_required
+def get_product(category_id, product_id):
+    """A method adds product instance to products list"""
+    db = Database(app.config['DATABASE_URI'])
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 403)
+    found = db.find_category_by_category_id(category_id)
+    if not found:
+        raise InvalidUsage("Product does not exist", 404)
+    item = db.find_product_by_product_id(product_id)
+    if not item:
+        raise InvalidUsage("product does not exist")
+    return jsonify({'product': item.to_json()}), 200
+
+
 @product.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
