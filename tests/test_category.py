@@ -19,7 +19,7 @@ class TestCategory(unittest.TestCase):
         response = self.app.post('/api/v1/categories', json=post_add,
                                  headers={'Authorization': 'Bearer ' + self.token})
         assert json.loads(response.data)['message'] == 'Fahad2344 has successfully been added to categories'
-        assert response.status_code == 200
+        assert response.status_code == 201
         assert response.headers["Content-Type"] == "application/json"
 
     def test_create_user_invalid_content(self):
@@ -152,3 +152,5 @@ class TestCategory(unittest.TestCase):
         self.db.drop_tables('users')
         self.db.drop_tables('products')
         self.db.drop_tables('categories')
+        self.db.drop_tables('sales')
+        self.db.drop_tables('sold')
