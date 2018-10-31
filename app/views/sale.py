@@ -42,6 +42,39 @@ def create_sale():
     raise InvalidUsage("This quantity is unavailable, try lesser quantity", 400)
 
 
+
+@sale.route("/api/v1/sales/<int:sale_id>", methods=["GET"])
+@jwt_required
+def get_sale(sale_id):
+    db = Database(app.config['DATABASE_URI'])
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 403)
+    item = db.find_sale_by_sale_id(sale_id)
+    if not item:
+        raise InvalidUsage("sale record does not exist")
+    return jsonify({'sale': item.to_json()}), 200
+
+
+@sale.route("/api/v1/sales", methods=["GET"])
+@jwt_required
+def get_all_sale():
+    db = Database(app.config['DATABASE_URI'])
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 403)
+    item = db.get_all_sales()
+    if not item:
+        raise InvalidUsage("sale record does not exist")
+    return jsonify({'sale': item}), 200
+
+
 @sale.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
