@@ -68,7 +68,7 @@ class Database:
                 """,
                 """
                 CREATE TABLE IF NOT EXISTS sales (
-                    sale_id INTEGER PRIMARY KEY NOT NULL,
+                    sale_id SERIAL PRIMARY KEY NOT NULL,
                     sale_date TIMESTAMPTZ DEFAULT NOW(),
                     total INTEGER NOT NULL,
                     user_id INTEGER NOT NULL,
@@ -269,10 +269,10 @@ class Database:
         return products
 
     # Queries for the sale table
-    def add_sale(self, total, user_id, sale_id):
-        """Insert an product in a respective products table"""
-        query = f"INSERT INTO sales(total, user_id, sale_id) " \
-                f"VALUES('{total}', '{user_id}', '{sale_id}');"
+    def add_sale(self, total, user_id):
+        """Insert an sale in a respective products table"""
+        query = f"INSERT INTO sales(total, user_id) " \
+                f"VALUES('{total}', '{user_id}');"
         cur = self.conn.cursor()
         cur.execute(query)
         self.conn.commit()
