@@ -1,4 +1,5 @@
 sales = []
+sale_ids = []
 
 
 class Sale:
