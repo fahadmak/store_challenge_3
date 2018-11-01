@@ -70,7 +70,7 @@ class TestSales(unittest.TestCase):
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
-    def test_get_sale_by_id(self):
+    def test_get_sale_by_id_admin(self):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                   headers={'Authorization': 'Bearer ' + self.token})
@@ -81,9 +81,9 @@ class TestSales(unittest.TestCase):
         response = self.app.post('/api/v1/sales', json=sale,
                                  headers={'Authorization': 'Bearer ' + self.token})
         response3 = self.app.get('/api/v1/sales/1', content_type='application/json',
-                                   headers={'Authorization': 'Bearer ' + self.token})
-        assert json.loads(response3.data)['sale']['user_id'] == 1
-        assert response3.status_code == 200
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response3.data)['error'] == "You can't access this sale record"
+        assert response3.status_code == 401
         assert response3.headers["Content-Type"] == "application/json"
 
     def test_get_all_sale(self):
