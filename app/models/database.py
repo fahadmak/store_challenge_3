@@ -3,9 +3,9 @@ import sys
 from urllib.parse import urlparse
 from passlib.hash import pbkdf2_sha256 as sha256
 from app.models.user_model import User
-from app.models.product_model import Product, products
-from app.models.category_model import Category, categories
-from app.models.sale_model import Sale, sales
+from app.models.product_model import Product
+from app.models.category_model import Category
+from app.models.sale_model import Sale
 
 
 class Database:
@@ -68,7 +68,7 @@ class Database:
                 """,
                 """
                 CREATE TABLE IF NOT EXISTS sales (
-                    sale_id SERIAL PRIMARY KEY,
+                    sale_id INTEGER PRIMARY KEY NOT NULL,
                     sale_date TIMESTAMPTZ DEFAULT NOW(),
                     total INTEGER NOT NULL,
                     user_id INTEGER NOT NULL,
@@ -87,7 +87,6 @@ class Database:
                     FOREIGN KEY (sale_id)
                     REFERENCES sales (sale_id)
                     ON UPDATE CASCADE ON DELETE CASCADE,
-                    product_name VARCHAR(255) NOT NULL UNIQUE,
                     quantity INTEGER NOT NULL                   
                 )
                 """,
@@ -197,6 +196,7 @@ class Database:
         results = cur.fetchall()
         if not results:
             return False
+        categories = []
         for result in results:
             category = Category(result[0], result[1], result[2]).to_json()
             categories.append(category)
@@ -262,16 +262,17 @@ class Database:
         results = cur.fetchall()
         if not results:
             return False
+        products = []
         for result in results:
             product = Product(result[0], result[1], result[2], result[3]).to_json()
             products.append(product)
         return products
 
     # Queries for the sale table
-    def add_sale(self, total, user_id):
+    def add_sale(self, total, user_id, sale_id):
         """Insert an product in a respective products table"""
-        query = f"INSERT INTO sales(total, user_id) " \
-                f"VALUES('{total}', '{user_id}');"
+        query = f"INSERT INTO sales(total, user_id, sale_id) " \
+                f"VALUES('{total}', '{user_id}', '{sale_id}');"
         cur = self.conn.cursor()
         cur.execute(query)
         self.conn.commit()
@@ -298,10 +299,11 @@ class Database:
 
     def get_all_sales(self):
         """select all sales records in sales table"""
-        query = f"SELECT * FROM products"
+        query = f"SELECT * FROM sales"
         cur = self.conn.cursor()
         cur.execute(query)
         results = cur.fetchall()
+        sales = []
         if not results:
             return False
         for result in results:
@@ -310,12 +312,20 @@ class Database:
         return sales
 
     # Queries for the sale table
-    def add_sold_item(self, product_name, quantity, product_id, sale_id):
+    def add_sold_item(self, quantity, product_id, sale_id):
         """Insert an product in a respective products table"""
-        query = f"INSERT INTO sold(product_name, quantity, product_id, sale_id) " \
-                f"VALUES('{product_name}', {quantity}, {product_id}, {sale_id});"
+        query = f"INSERT INTO sold(quantity, product_id, sale_id) " \
+                f"VALUES( {quantity}, {product_id}, {sale_id});"
         cur = self.conn.cursor()
         cur.execute(query)
         self.conn.commit()
 
+    def get_max_sale_id(self):
+        """select all sales records in sales table"""
+        query = "SELECT sale_id FROM sales;"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        results = cur.fetchone()
+        if results:
+            return results
 
