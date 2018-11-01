@@ -37,7 +37,7 @@ def create_sale():
         product = db.find_product_by_product_id(item['product_id'])
         if not product:
             raise InvalidUsage("product does not exist", 400)
-        if item['quantity'] < product.quantity:
+        if item['quantity'] > product.quantity:
             raise InvalidUsage(f"This quantity of {product.product_name} ordered should less than "
                                f"{item['quantity']}", 400)
         total += product.price * item['quantity']
