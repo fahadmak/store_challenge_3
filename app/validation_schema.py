@@ -10,6 +10,11 @@ product_schema = {'product_name': {'type': 'string', 'required': True},
                   'quantity': {'type': 'integer', 'required': True},
                   'product_price': {'type': 'integer', 'required': True}}
 
+add_product_schema = {'product_name': {'type': 'string', 'required': True},
+                      'quantity': {'type': 'integer', 'required': True},
+                      'product_price': {'type': 'integer', 'required': True},
+                      'category_id': {'type': 'integer', 'required': True}}
+
 category_schema = {'category_name': {'type': 'string', 'required': True}}
 
 sale_schema = {'quantity': {'type': 'integer', 'required': True},

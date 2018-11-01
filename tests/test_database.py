@@ -2,9 +2,7 @@ import unittest
 
 from app import create_app
 from app.models.database import Database
-from app.models.product_model import Product
-from app.models.category_model import Category
-from app.models.sale_model import Sale
+
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):

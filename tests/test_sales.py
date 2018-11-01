@@ -18,8 +18,8 @@ class TestSales(unittest.TestCase):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12)
-        response2 = self.app.post('/api/v1/categories/1/products', json=post_add2,
+        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        response2 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         sale = dict(product_id=1, quantity=10)
         response = self.app.post('/api/v1/sales', json=sale,
@@ -28,12 +28,54 @@ class TestSales(unittest.TestCase):
         assert response.status_code == 200
         assert response.headers["Content-Type"] == "application/json"
 
+    def test_create_sale_low_quantity(self):
+        post_add = dict(category_name="phill")
+        response1 = self.app.post('/api/v1/categories', json=post_add,
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        response2 = self.app.post('/api/v1/products', json=post_add2,
+                                  headers={'Authorization': 'Bearer ' + self.token})
+        sale = dict(product_id=1, quantity=100)
+        response = self.app.post('/api/v1/sales', json=sale,
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response.data)['error'] == 'This quantity is unavailable, try lesser quantity'
+        assert response.status_code == 400
+        assert response.headers["Content-Type"] == "application/json"
+
+    def test_create_empty(self):
+        post_add = dict(category_name="phill")
+        response1 = self.app.post('/api/v1/categories', json=post_add,
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        response2 = self.app.post('/api/v1/products', json=post_add2,
+                                  headers={'Authorization': 'Bearer ' + self.token})
+        sale = dict(product_id=1)
+        response = self.app.post('/api/v1/sales', json=sale,
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response.data)['error'] == {'error': {'quantity': ['required field']}}
+        assert response.status_code == 400
+        assert response.headers["Content-Type"] == "application/json"
+
+    def test_create_sale_incorrect_input(self):
+        post_add = dict(category_name="phill")
+        response1 = self.app.post('/api/v1/categories', json=post_add,
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        response2 = self.app.post('/api/v1/products', json=post_add2,
+                                  headers={'Authorization': 'Bearer ' + self.token})
+        sale = dict(product_id=1, quantity="food")
+        response = self.app.post('/api/v1/sales', json=sale,
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response.data)['error']['error'] == {'quantity': ['must be of integer type']}
+        assert response.status_code == 400
+        assert response.headers["Content-Type"] == "application/json"
+
     def test_get_sale_by_id(self):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12)
-        response2 = self.app.post('/api/v1/categories/1/products', json=post_add2,
+        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        response2 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         sale = dict(product_id=1, quantity=10)
         response = self.app.post('/api/v1/sales', json=sale,
@@ -42,6 +84,21 @@ class TestSales(unittest.TestCase):
                                    headers={'Authorization': 'Bearer ' + self.token})
         assert json.loads(response3.data)['sale']['user_id'] == 1
         assert response3.status_code == 200
+        assert response3.headers["Content-Type"] == "application/json"
+
+    def test_get_all_sale(self):
+
+        response3 = self.app.get('/api/v1/sales', content_type='application/json',
+                                 headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response3.data) == {'error': 'No sale records'}
+        assert response3.status_code == 400
+        assert response3.headers["Content-Type"] == "application/json"
+
+    def test_no_sales(self):
+        response3 = self.app.get('/api/v1/sales', content_type='application/json',
+                                   headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response3.data) == {'error': 'No sale records'}
+        assert response3.status_code == 400
         assert response3.headers["Content-Type"] == "application/json"
 
     def tearDown(self):

@@ -1,6 +1,7 @@
 import psycopg2
 import sys
 from urllib.parse import urlparse
+from passlib.hash import pbkdf2_sha256 as sha256
 from app.models.user_model import User
 from app.models.product_model import Product, products
 from app.models.category_model import Category, categories
@@ -30,6 +31,12 @@ class Database:
                     password VARCHAR(255) NOT NULL,
                     date_created TIMESTAMPTZ DEFAULT NOW(),
                     is_admin BOOLEAN DEFAULT FALSE
+                )
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS blacklist (
+                    revoke_id SERIAL PRIMARY KEY,
+                    code VARCHAR(255)
                 )
                 """,
                 """
@@ -86,9 +93,9 @@ class Database:
                 """,
                 """
                 INSERT INTO users (name, username, password, is_admin) 
-                SELECT * FROM (SELECT 'admin', 'admin', 'admin', TRUE) 
+                SELECT * FROM (SELECT 'admin', 'admin', '{}', TRUE) 
                 AS tmp WHERE NOT EXISTS (SELECT name FROM users WHERE username = 'admin') LIMIT 1;
-                """
+                """.format(sha256.hash('admin'))
                 )
 
             for command in commands:
@@ -119,7 +126,6 @@ class Database:
         cur = self.conn.cursor()
         cur.execute(query)
         result = cur.fetchone()
-        print(result)
         if result:
             user = User(result[0], result[1], result[2], result[3], result[4], result[5])
             return user
@@ -192,7 +198,7 @@ class Database:
         if not results:
             return False
         for result in results:
-            category = Category(result[0], result[1], result[2])
+            category = Category(result[0], result[1], result[2]).to_json()
             categories.append(category)
         return categories
 
@@ -257,7 +263,7 @@ class Database:
         if not results:
             return False
         for result in results:
-            product = Product(result[0], result[1], result[2], result[3])
+            product = Product(result[0], result[1], result[2], result[3]).to_json()
             products.append(product)
         return products
 
@@ -299,7 +305,7 @@ class Database:
         if not results:
             return False
         for result in results:
-            sale = Sale(result[0], result[1], result[2], result[3])
+            sale = Sale(result[0], result[1], result[2], result[3]).to_json()
             sales.append(sale)
         return sales
 

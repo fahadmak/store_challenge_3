@@ -4,6 +4,7 @@ class Config(object):
     CSRF_ENABLED = True
     JWT_SECRET_KEY = "bigsecret"
     DATABASE_URI = 'postgresql://postgres:maka1997@localhost/store'
+    JWT_ACCESS_TOKEN_EXPIRES = False
 
 
 class DevelopmentConfig(Config):
