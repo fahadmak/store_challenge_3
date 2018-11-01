@@ -8,7 +8,7 @@ class TestDevelopmentConfig(unittest.TestCase):
         app = create_app("development")
         self.assertTrue(app.config['DEBUG'] is True)
         self.assertEqual(
-            app.config['DATABASE_URI'], 'postgresql://postgres:maka1997@localhost/storedb'
+            app.config['DATABASE_URI'], 'postgresql://postgres:maka1997@localhost/store'
         )
         self.assertTrue(app.config['JWT_SECRET_KEY'] == 'bigsecret')
 
