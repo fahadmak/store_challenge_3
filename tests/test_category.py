@@ -148,6 +148,16 @@ class TestCategory(unittest.TestCase):
         assert response.status_code == 404
         assert response.headers["Content-Type"] == "application/json"
 
+    def test_get_all_categories(self):
+        post_add4 = dict(category_name="Fahad2344")
+        response4 = self.app.post('/api/v1/categories', json=post_add4,
+                                  headers={'Authorization': 'Bearer ' + self.token})
+        response = self.app.get('/api/v1/categories', content_type='application/json',
+                                headers={'Authorization': 'Bearer ' + self.token})
+        assert json.loads(response.data)['categories'][0]['user_id'] == 1
+        assert response.status_code == 200
+        assert response.headers["Content-Type"] == "application/json"
+
     def tearDown(self):
         self.db.drop_tables('users')
         self.db.drop_tables('products')

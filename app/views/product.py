@@ -4,34 +4,41 @@ from cerberus import Validator
 
 from app.error_handler import InvalidUsage
 from app.models.database import Database
-from app.validation_schema import product_schema
+from app.validation_schema import product_schema, add_product_schema
 
 product = Blueprint("product", __name__)
 
 v = Validator()
 
 
-@product.route("/api/v1/categories/<int:category_id>/products", methods=["POST"])
+@product.route("/api/v1/products", methods=["POST"])
 @jwt_required
-def create_product(category_id):
-    """A method adds product instance to products list"""
-    db = Database(app.config['DATABASE_URI'])
+def create_product():
+    """A method adds product to database"""
+
     if request.content_type != "application/json":
         raise InvalidUsage("Invalid content type", 400)
+
+    db = Database(app.config['DATABASE_URI'])
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 401)
+
     data = request.json
     name = data.get("product_name")
     price = data.get("product_price")
     quantity = data.get("quantity")
-    current_user_id = get_jwt_identity()
-    user = db.find_user_by_id(current_user_id)
-    if user.is_admin is False:
-        raise InvalidUsage("you do not have admin rights", 403)
-    validate = v.validate(data, product_schema)
+    category_id = data.get("category_id")
+
+    validate = v.validate(data, add_product_schema)
     if not validate:
         raise InvalidUsage({'error': v.errors}, 400)
+
     category = db.find_category_by_category_id(category_id)
     if not category:
         raise InvalidUsage("category does not exist", 404)
+
     found = db.find_product_by_product_name(name)
     if found:
         raise InvalidUsage(f"{found.product_name} already exists", 400)
@@ -40,74 +47,90 @@ def create_product(category_id):
                                f' has successfully been added to inventories'}), 201
 
 
-@product.route("/api/v1/categories/<int:category_id>/products/<int:product_id>", methods=["PUT"])
+@product.route("/api/v1/products/<int:product_id>", methods=["PUT"])
 @jwt_required
-def modify_product(category_id, product_id):
+def modify_product(product_id):
     """A method adds product instance to products list"""
-    db = Database(app.config['DATABASE_URI'])
     if request.content_type != "application/json":
         raise InvalidUsage("Invalid content type", 400)
-    current_user_id = get_jwt_identity()
-    user = db.find_user_by_id(current_user_id)
-    if user.is_admin is False:
-        raise InvalidUsage("you do not have admin rights", 403)
+
     data = request.json
     name = data.get("product_name")
     price = data.get("product_price")
     quantity = data.get("quantity")
-    category = db.find_category_by_category_id(category_id)
-    if not category:
-        raise InvalidUsage("category does not exist")
+
     validate = v.validate(data, product_schema)
     if not validate:
         raise InvalidUsage({'error': v.errors}, 400)
+
+    db = Database(app.config['DATABASE_URI'])
+
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 401)
+
     found = db.find_product_by_product_name(name)
     if found:
         raise InvalidUsage(f"{found.product_name} name already exists", 400)
+
     db.modify_product(name, quantity, price, product_id)
-    return jsonify({'message': f'{name} has successfully been modified'}), 200
+
+    return jsonify({'message': f'Product is now called {name} '}), 200
 
 
-@product.route("/api/v1/categories/<int:category_id>/products/<int:product_id>", methods=["DELETE"])
+@product.route("/api/v1/products/<int:product_id>", methods=["DELETE"])
 @jwt_required
-def delete_product(category_id, product_id):
-    """A method adds product instance to products list"""
-    db = Database(app.config['DATABASE_URI'])
+def delete_product(product_id):
+    """A method deletes product stored in the database"""
     if request.content_type != "application/json":
         raise InvalidUsage("Invalid content type", 400)
+
+    db = Database(app.config['DATABASE_URI'])
+
     current_user_id = get_jwt_identity()
     user = db.find_user_by_id(current_user_id)
-    print("yes")
-    if user.is_admin is False:
-        raise InvalidUsage("you do not have admin rights", 403)
-    found = db.find_category_by_category_id(category_id)
-    if not found:
-        raise InvalidUsage("Category does not exist", 404)
+    if not user.is_admin:
+        raise InvalidUsage("you do not have admin rights", 401)
+
     item = db.find_product_by_product_id(product_id)
     if not item:
         raise InvalidUsage("product does not exist", 404)
+    item_name, item_id = item.product_name, item.product_id
     db.delete_product(product_id)
-    return jsonify({'message': f'Product has been deleted'}), 200
+    return jsonify({'message': f'{item_name} has been deleted'}), 200
 
 
-@product.route("/api/v1/categories/<int:category_id>/products/<int:product_id>", methods=["GET"])
+@product.route("/api/v1/products/<int:product_id>", methods=["GET"])
 @jwt_required
-def get_product(category_id, product_id):
+def get_product(product_id):
     """A method adds product instance to products list"""
-    db = Database(app.config['DATABASE_URI'])
+
     if request.content_type != "application/json":
         raise InvalidUsage("Invalid content type", 400)
-    current_user_id = get_jwt_identity()
-    user = db.find_user_by_id(current_user_id)
-    if user.is_admin is False:
-        raise InvalidUsage("you do not have admin rights", 403)
-    found = db.find_category_by_category_id(category_id)
-    if not found:
-        raise InvalidUsage("Product does not exist", 404)
+
+    db = Database(app.config['DATABASE_URI'])
+
     item = db.find_product_by_product_id(product_id)
     if not item:
-        raise InvalidUsage("product does not exist")
+        raise InvalidUsage("product does not exist", 400)
     return jsonify({'product': item.to_json()}), 200
+
+
+@product.route("/api/v1/products", methods=["GET"])
+@jwt_required
+def get_all_products():
+    """A method gets all products"""
+    if request.content_type != 'application/json':
+        raise InvalidUsage("Invalid content type", 400)
+
+    db = Database(app.config['DATABASE_URI'])
+
+    products = db.get_all_products()
+    if not products:
+        raise InvalidUsage("They are currently no products")
+
+    return jsonify({'products': products}), 200
 
 
 @product.errorhandler(InvalidUsage)

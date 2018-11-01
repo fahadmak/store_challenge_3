@@ -111,6 +111,47 @@ class TestUser(unittest.TestCase):
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
+    def test_modify_rights(self):
+        login = dict(username="admin", password="admin")
+        response1 = self.app.post('/api/v1/auth/login', json=login)
+        token = json.loads(response1.data)['access_token']
+        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        response2 = self.app.post('/api/v1/auth/signup', json=post_signup,
+                                 headers={'Authorization': 'Bearer ' + token})
+        response = self.app.put('/api/v1/auth/promote/2', json=post_signup,
+                                 headers={'Authorization': 'Bearer ' + token})
+        assert json.loads(response.data)['message'] == "Giga is now an admin"
+        assert response.status_code == 200
+        assert response.headers["Content-Type"] == "application/json"
+
+    def test_already_has_rights(self):
+        login = dict(username="admin", password="admin")
+        response1 = self.app.post('/api/v1/auth/login', json=login)
+        token = json.loads(response1.data)['access_token']
+        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        response2 = self.app.post('/api/v1/auth/signup', json=post_signup,
+                                 headers={'Authorization': 'Bearer ' + token})
+        response3 = self.app.put('/api/v1/auth/promote/2', json=post_signup,
+                                 headers={'Authorization': 'Bearer ' + token})
+        response = self.app.put('/api/v1/auth/promote/2', json=post_signup,
+                                headers={'Authorization': 'Bearer ' + token})
+        assert json.loads(response.data)['error'] == "Giga already has admin rights"
+        assert response.status_code == 400
+        assert response.headers["Content-Type"] == "application/json"
+
+    def test_rights_doesnot_exist(self):
+        login = dict(username="admin", password="admin")
+        response1 = self.app.post('/api/v1/auth/login', json=login)
+        token = json.loads(response1.data)['access_token']
+        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        response2 = self.app.post('/api/v1/auth/signup', json=post_signup,
+                                 headers={'Authorization': 'Bearer ' + token})
+        response = self.app.put('/api/v1/auth/promote/4', json=post_signup,
+                                headers={'Authorization': 'Bearer ' + token})
+        assert json.loads(response.data)['error'] == "User does not exist"
+        assert response.status_code == 404
+        assert response.headers["Content-Type"] == "application/json"
+
     def tearDown(self):
         self.db.drop_tables('users')
         self.db.drop_tables('products')
