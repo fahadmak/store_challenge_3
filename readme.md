@@ -42,19 +42,23 @@ To use the application via postman go to
 
 Use the following endpoints:
 
- EndPoint                       | Functionality
-------------------------        | ----------------------
-POST /auth/login                | Login
-POST /auth/signup               | Create User
-PUT /auth/promote/<user_id>     | Give Admin rights
-POST /products                  | Add a new product
-PUT /product/<product_id>       | Modify a Product
-GET /products                   | Gets all products
-GET /products/<product_id>      | Gets a product
-DELETE /products/<product_id>   | Delete a product
-POST /sales                     | Add a new sale record
-GET /sales                      | Gets all sale records
-GET /sales/<sale_id>            | Gets a sale
+ EndPoint                         | Functionality
+------------------------          | ----------------------
+POST /auth/login                  | Login
+POST /auth/signup                 | Create User
+PUT /auth/promote/<user_id>       | Give Admin rights
+POST /products                    | Add a new product
+PUT /product/<product_id>         | Modify a Product
+GET /products                     | Gets all products
+GET /products/<product_id>        | Gets a product
+DELETE /products/<product_id>     | Delete a product
+POST /sales                       | Add a new sale record
+GET /sales                        | Gets all sale records
+GET /sales/<sale_id>              | Gets a sale
+POST /categories                  | Add a category
+GET /categories/<category_id>     | Gets a product
+PUT /categories/<category_id>     | Modify a category
+DELETE /categories/<category_id>  | Delete a category
 
 
 **Prerequisites used to build the application**
