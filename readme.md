@@ -21,6 +21,14 @@ As a store attendant/admin:
 * Can get a specific product
 * Can add a sale order
 
+As User:
+
+* Can add a product
+* Can get all sale order records
+* Create User
+* Assign Admin rights
+* Login / Log out
+
 As admin:
 
 * Can add a product
@@ -36,9 +44,14 @@ Use the following endpoints:
 
  EndPoint                       | Functionality
 ------------------------        | ----------------------
+POST /auth/login                | Login
+POST /auth/signup               | Create User
+PUT /auth/promote/<user_id>     | Give Admin rights
 POST /products                  | Add a new product
+PUT /product/<product_id>       | Modify a Product
 GET /products                   | Gets all products
 GET /products/<product_id>      | Gets a product
+DELETE /products/<product_id>   | Delete a product
 POST /sales                     | Add a new sale record
 GET /sales                      | Gets all sale records
 GET /sales/<sale_id>            | Gets a sale
@@ -54,7 +67,7 @@ GET /sales/<sale_id>            | Gets a sale
 
 I. Initialize git in a new directory. Clone this repository by running in that new directory
 
-`$ git clone https://github.com/fahadmak/store_manager_api.git`
+`$ git clone https://github.com/fahadmak/store_challenge_3.git`
 
 II.  Create a virtual environment. For example, with virtualenv, create a virtual environment named venv using
 
