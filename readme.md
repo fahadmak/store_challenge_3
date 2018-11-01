@@ -12,14 +12,21 @@ meant for use in a single store.
 
 * Adding Products
 * Viewing all products
+* Delete a Product
+* Modify a Product
 * Creating a Sale Record
 * Viewing Sale Records
+* Creates a category for Products
+* Delete a Category
+* Modify a Category
+* Views a Category
 
 As a store attendant/admin:
 
 * Can get all products
 * Can get a specific product
 * Can add a sale order
+* Views a Category
 
 As User:
 
@@ -33,6 +40,9 @@ As admin:
 
 * Can add a product
 * Can get all sale order records
+* Creates a category for Products
+* Delete a Category
+* Modify a Category
 
 **Demo**
 
