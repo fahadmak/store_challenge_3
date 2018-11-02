@@ -103,7 +103,7 @@ def login_user():
         raise InvalidUsage('Username and password did not match', 400)
 
     user_id = found.user_id
-    access_token = create_access_token(identity=user_id, expires_delta=timedelta(hours=1))
+    access_token = create_access_token(identity=user_id, expires_delta=timedelta(hours=3))
     return jsonify(access_token=access_token, message="login successful"), 200
 
 
