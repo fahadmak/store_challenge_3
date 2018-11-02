@@ -2,10 +2,11 @@ from flask import Blueprint, jsonify, request
 from cerberus import Validator
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from passlib.hash import pbkdf2_sha256 as sha256
-
+from datetime import timedelta
 from app.error_handler import InvalidUsage
 from app.models.database import Database
 from flask import current_app as app
+
 from app.validation_schema import user_schema, login_schema
 
 user = Blueprint("user", __name__)
@@ -102,7 +103,7 @@ def login_user():
         raise InvalidUsage('Username and password did not match', 400)
 
     user_id = found.user_id
-    access_token = create_access_token(identity=user_id)
+    access_token = create_access_token(identity=user_id, expires_delta=timedelta(hours=1))
     return jsonify(access_token=access_token, message="login successful"), 200
 
 
