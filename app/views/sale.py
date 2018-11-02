@@ -4,7 +4,7 @@ from cerberus import Validator
 
 from app.error_handler import InvalidUsage
 from app.models.database import Database
-from app.validation_schema import sale_schema
+from app.validation_schema import sale_schema, login_schema
 
 v = Validator()
 
