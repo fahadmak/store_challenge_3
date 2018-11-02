@@ -48,7 +48,7 @@ As admin:
 
 To use the application via postman go to
 
-`https://api-stores-heroku.herokuapp.com/api/v1`
+`https://store-challenge-3-api.herokuapp.com/api/v1`
 
 Use the following endpoints:
 
