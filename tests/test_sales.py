@@ -96,7 +96,7 @@ class TestSales(unittest.TestCase):
 
         response3 = self.app.get('/api/v1/sales', content_type='application/json',
                                  headers={'Authorization': 'Bearer ' + self.token})
-        assert json.loads(response3.data) == {'error': 'you do not have admin rights'}
+        assert json.loads(response3.data) == {'error': 'No sale records'}
         assert response3.status_code == 401
         assert response3.headers["Content-Type"] == "application/json"
 

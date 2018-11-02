@@ -83,7 +83,7 @@ def get_all_sale():
 
     db = Database(app.config['DATABASE_URI'])
     user = db.find_user_by_id(current_user_id)
-    if user.is_admin is True:
+    if user.is_admin is False:
         raise InvalidUsage("you do not have admin rights", 401)
 
     item = db.get_all_sales()
