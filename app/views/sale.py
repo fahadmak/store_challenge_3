@@ -21,6 +21,11 @@ def create_sale():
     if request.content_type != "application/json":
         raise InvalidUsage("Invalid content type", 400)
 
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if user.is_admin is False:
+        raise InvalidUsage("you should be a sale attendant", 401)
+
     data = request.json
     product_id = data.get("product_id")
     quantity = data.get("quantity")
@@ -38,7 +43,7 @@ def create_sale():
     if not product:
         raise InvalidUsage("product does not exist", 400)
 
-    if quantity < product.quantity:
+    if quantity <= product.quantity:
         total = product.price * quantity
         new_stock = product.quantity - quantity
         db.update_stock(new_stock, product_id)
@@ -58,9 +63,6 @@ def get_sale(sale_id):
     current_user_id = get_jwt_identity()
 
     db = Database(app.config['DATABASE_URI'])
-    user = db.find_user_by_id(current_user_id)
-    if user.is_admin is True:
-        raise InvalidUsage("You can't access this sale record", 401)
 
     item = db.find_sale_by_sale_id(sale_id)
     if item.user_id != current_user_id:
@@ -81,7 +83,7 @@ def get_all_sale():
 
     db = Database(app.config['DATABASE_URI'])
     user = db.find_user_by_id(current_user_id)
-    if user.is_admin is False:
+    if user.is_admin is True:
         raise InvalidUsage("you do not have admin rights", 401)
 
     item = db.get_all_sales()
