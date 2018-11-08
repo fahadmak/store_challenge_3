@@ -1,0 +1,330 @@
+FORMAT: 1A
+HOST: https://store-challenge-3-api.herokuapp.com/api/v1/
+
+# Store Manager
+
+Store Manager is a web application that helps store owners manage sales and product 
+inventory records.
+
+## User Sign Up [/auth/signup]
+
+### Create a New User [POST]
+
+You may create a user using this action. 
+
++ Request (application/json)
+
+        {
+        "name": "elijah r",
+        "username":"ben",
+        "password": "xyz"
+        }
+
++ Response 201 (application/json)
+
+
+    + Body
+
+            {
+            "message": "ben has successfully been added to staff"
+            }
+
+## Login User [/auth/login]   
+
+### Log in a User [POST]
+
+You may login using this action. 
+
++ Request (application/json)
+
+        {
+        "username":"admin",
+        "password": "admin"
+        }
+
++ Response 201 (application/json)
+
+
+    + Body
+
+            {
+            "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDE2NzU5NjAsIm5iZiI6MTU0MTY3NTk2MCwianRpIjoiYjZhOWMzZDYtYTFjZS00NmZjLWFhYTgtOTA1ZmVmOWUyYWVmIiwiZXhwIjoxNTQxNjg2NzYwLCJpZGVudGl0eSI6MSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.hj58HCfd1BVV1nCrhvc27ZzlWL0Noh59_QWZLXavYhg",
+            "message": "login successful"
+            }
+            
+## Categories Collection [/categories]
+
+### List All Categories [GET]
+
+You may view all categories using this action.
+
++ Response 200 (application/json)
+
+        {
+        "categories": [
+        {
+            "categoryId": 3,
+            "name": "metal",
+            "user_id": 1
+        },
+        {
+            "categoryId": 4,
+            "name": "the mexican",
+            "user_id": 1
+        }
+        
+        ]
+        }
+
+### Create a New Category [POST]
+
+You may create your own category using this action. 
+
++ Request (application/json)
+
+        {
+        "category_name":"the mexican"
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /categories/4
+
+    + Body
+
+            {
+            "categoryId": 4,
+            "name": "the mexican",
+            "user_id": 1
+            }
+
+## Category [/categories/4]
+
+### Get a particular Category [GET]
+
+You may get a particular category using this action. 
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+            "categoryId": 4,
+            "name": "the mexican",
+            "user_id": 1
+            }
+            
+### Modify an Existing Category [PUT]
+
+You may modify an existing category using this action. 
+
++ Request (application/json)
+
+        {
+        "category_name":"the mexican"
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /categories/4
+
+    + Body
+
+            {
+            "categoryId": 4,
+            "name": "the mexican",
+            "user_id": 1
+            }
+
+### Delete [DELETE]
+
++ Response 204
+
+## Products Collection [/products]
+
+### List All Products [GET]
+
+You may view all products using this action.
+
++ Response 200 (application/json)
+
+        {
+        "categories": [
+        {
+            "categoryId": 3,
+            "name": "metal",
+            "user_id": 1
+        },
+        {
+            "categoryId": 4,
+            "name": "the mexican",
+            "user_id": 1
+        }
+        
+        ]
+        }
+
+### Create a New Product [POST]
+
+You may create your own product using this action. 
+
++ Request (application/json)
+
+        {
+        "category_id": 3,
+        "product_name":"maize",
+        "product_price": 12001,
+        "quantity": 23000
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /products/4
+
+    + Body
+
+            {
+            "message": "maize has successfully been added to inventories"
+            }
+
+
+## Products [/products/8]
+
+### Get a particular Product [GET]
+
+You may get a particular product using this action. 
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+            "product": {
+            "name": "maize",
+            "price": 12001,
+            "productId": 8,
+            "quantity": 23000
+            }
+            }
+            
+### Modify an Existing Product [PUT]
+
+You may modify an existing product using this action. 
+
++ Request (application/json)
+
+        {
+        "product_name":"milk bar",
+        "product_price": 230,
+        "quantity": 2300
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /products/8
+
+    + Body
+
+            {
+            "message": "Product is now called fish bar "
+            }
+
+### Delete [DELETE]
+
++ Response 204
+
+## Sales Collection [/sales]
+
+### List All Sales [GET]
+
+You may view all sales using this action.
+
++ Response 200 (application/json)
+
+        {
+        "sale": [
+        {
+            "sale_date": 276,
+            "sale_id": 1,
+            "total": "Fri, 02 Nov 2018 00:21:58 GMT",
+            "user_id": 1
+        },
+        {
+            "sale_date": 276,
+            "sale_id": 2,
+            "total": "Fri, 02 Nov 2018 07:04:12 GMT",
+            "user_id": 1
+        },
+        {
+            "sale_date": 276,
+            "sale_id": 3,
+            "total": "Fri, 02 Nov 2018 07:18:05 GMT",
+            "user_id": 1
+        },
+        {
+            "sale_date": 230,
+            "sale_id": 4,
+            "total": "Fri, 02 Nov 2018 08:39:18 GMT",
+            "user_id": 1
+        },
+        {
+            "sale_date": 230,
+            "sale_id": 5,
+            "total": "Fri, 02 Nov 2018 08:39:51 GMT",
+            "user_id": 1
+        },
+        {
+            "sale_date": 23000,
+            "sale_id": 6,
+            "total": "Fri, 02 Nov 2018 09:05:25 GMT",
+            "user_id": 1
+        }
+        ]
+        }
+
+### Create a New Sale Record [POST]
+
+You may create your own sale record using this action. 
+
++ Request (application/json)
+
+        {
+        "product_id":5,
+        "quantity": 10
+        }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+            "message": "Sale record has been created successfully"
+            }
+
+
+## Sales [/sales/7]
+
+### Get a particular Sale Record [GET]
+
+You may get a particular sale record using this action. 
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+            "sale": {
+            "sale_date": 2300,
+            "sale_id": 7,
+            "total": "Thu, 08 Nov 2018 11:36:01 GMT",
+            "user_id": 1
+            }
+            }
