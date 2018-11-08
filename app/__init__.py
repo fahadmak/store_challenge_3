@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from config import app_config
 
 
@@ -8,6 +9,8 @@ from config import app_config
 def create_app(config_name):
     """create flask application and set dev environment"""
     app = Flask(__name__)
+    CORS(app)
+    app.config['CORS_HEADERS'] = 'Content-Type'
     app.config.from_object(app_config[config_name])
     jwt = JWTManager(app)
 
