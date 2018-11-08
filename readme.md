@@ -44,6 +44,10 @@ As admin:
 * Delete a Category
 * Modify a Category
 
+**App Documenation**
+
+To learn more about the application try the app documenatation found on https://storemanager18.docs.apiary.io/#
+
 **Demo**
 
 To use the application via postman go to
