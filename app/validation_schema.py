@@ -2,9 +2,9 @@ import string
 
 letters = tuple(string.ascii_letters)
 
-user_schema = {'name': {'required': True, 'min': 6, 'type': 'string', 'forbidden': [' ', "", "    "]},
-               'username': {'type': 'string', 'min': 7, 'required': True, 'forbidden': [' ', "", "    "]},
-               'password': {'type': 'string', 'required': True, 'forbidden': [' ', "", "    "]}}
+user_schema = {'name': {'required': True, 'min': 6, 'type': 'string', 'regex': '^[A-Za-z0-9]+$'},
+               'username': {'type': 'string', 'min': 7, 'required': True, 'regex': '^[a-z0-9]{5,15}$'},
+               'password': {'type': 'string', 'required': True, 'regex': '^[a-z0-9]{5,15}$'}}
 
 login_schema = {'username': {'type': 'string', 'required': True, 'regex': '^[a-z0-9_@]{5,15}$'},
                 'password': {'type': 'string', 'required': True, 'regex': '^[a-z0-9_@]{5,15}$'}}
