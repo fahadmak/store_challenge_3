@@ -87,8 +87,8 @@ def login_user():
         raise InvalidUsage("Invalid content type", 400)
 
     data = request.json
-    username = data.get("username").strip()
-    password = data.get("password").strip()
+    username = data.get("username")
+    password = data.get("password")
 
     validate = v.validate(data, login_schema)
     if not validate:
