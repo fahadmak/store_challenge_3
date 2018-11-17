@@ -15,10 +15,10 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa4", password="hoort3")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
-        assert json.loads(response.data)['message'] == "Giga has successfully been added to staff"
+        assert json.loads(response.data)['message'] == "igaa4 has successfully been added to staff"
         assert response.status_code == 201
         assert response.headers["Content-Type"] == "application/json"
 
@@ -26,7 +26,7 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa4", password="hoort3")
         response = self.app.post('/api/v1/auth/signup', json=post_signup, content_type='application/javascript',
                                  headers={'Authorization': 'Bearer ' + token})
         assert json.loads(response.data)['error'] == "Invalid content type"
@@ -37,7 +37,7 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup = dict(username="admin", password="admin")
+        post_signup = dict(username="admin4", password="admin4")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
         assert json.loads(response.data)['error'] == {'error': {'name': ['required field']}}
@@ -48,7 +48,7 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup = dict(name=7, username="reat", password="retty")
+        post_signup = dict(name=7, username="reat4", password="retty5")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
         assert json.loads(response.data)['error'] == {'error': {'name': ['must be of string type']}}
@@ -59,13 +59,13 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup2 = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup2 = dict(name="Fahad", username="igaa4", password="hoort3")
         response2 = self.app.post('/api/v1/auth/signup', json=post_signup2,
                                   headers={'Authorization': 'Bearer ' + token})
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa4", password="hoort3")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
-        assert json.loads(response.data)['error'] == "Giga already exists"
+        assert json.loads(response.data)['error'] == "igaa4 already exists"
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
@@ -84,30 +84,23 @@ class TestUser(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_login_password_no_match(self):
-        login = dict(username="admin", password="Shoort")
+        login = dict(username="admin", password="hoort4")
         response = self.app.post('/api/v1/auth/login', json=login)
         assert json.loads(response.data)['error'] == "Username and password did not match"
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
-    def test_login_username_doesnot_exist(self):
-        login = dict(username="Gigar", password="Shoort3")
-        response = self.app.post('/api/v1/auth/login', json=login)
-        assert json.loads(response.data)['error'] == "Gigar doesn't exist"
-        assert response.status_code == 400
-        assert response.headers["Content-Type"] == "application/json"
-
     def test_login_empty(self):
-        login = dict(password="Shoort3")
+        login = dict(password="hoort3")
         response = self.app.post('/api/v1/auth/login', json=login)
-        assert json.loads(response.data)['error'] == {'error': {'username': ['required field']}}
+        assert json.loads(response.data) == {'username': ['required field']}
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
     def test_login_incorrect(self):
-        login = dict(username=7, password="Shoort3")
+        login = dict(username=7, password="hoort3")
         response = self.app.post('/api/v1/auth/login', json=login)
-        assert json.loads(response.data)['error'] == {'error': {'username': ['must be of string type']}}
+        assert json.loads(response.data) == {'username': ['must be of string type']}
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
@@ -115,12 +108,12 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa4", password="hoort3")
         response2 = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
         response = self.app.put('/api/v1/auth/promote/2', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
-        assert json.loads(response.data)['message'] == "Giga is now an admin"
+        assert json.loads(response.data)['message'] == "igaa4 is now an admin"
         assert response.status_code == 200
         assert response.headers["Content-Type"] == "application/json"
 
@@ -128,14 +121,14 @@ class TestUser(unittest.TestCase):
         login = dict(username="admin", password="admin")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa3", password="hoort2")
         response2 = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
         response3 = self.app.put('/api/v1/auth/promote/2', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
         response = self.app.put('/api/v1/auth/promote/2', json=post_signup,
                                 headers={'Authorization': 'Bearer ' + token})
-        assert json.loads(response.data)['error'] == "Giga already has admin rights"
+        assert json.loads(response.data)['error'] == "igaa3 already has admin rights"
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
