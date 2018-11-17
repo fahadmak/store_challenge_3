@@ -26,14 +26,14 @@ def create_product():
         raise InvalidUsage("you do not have admin rights", 401)
 
     data = request.json
-    name = data.get("product_name")
-    price = data.get("product_price")
+    name = data.get("name")
+    price = data.get("price")
     quantity = data.get("quantity")
     category_id = data.get("category_id")
 
     validate = v.validate(data, add_product_schema)
     if not validate:
-        raise InvalidUsage({'error': v.errors}, 400)
+        raise InvalidUsage(v.errors, 400)
 
     category = db.find_category_by_category_id(category_id)
     if not category:
@@ -55,8 +55,8 @@ def modify_product(product_id):
         raise InvalidUsage("Invalid content type", 400)
 
     data = request.json
-    name = data.get("product_name")
-    price = data.get("product_price")
+    name = data.get("name")
+    price = data.get("price")
     quantity = data.get("quantity")
 
     validate = v.validate(data, product_schema)
