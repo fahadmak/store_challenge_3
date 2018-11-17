@@ -1,6 +1,6 @@
 import unittest
 import json
-import re
+
 
 from app import create_app
 from app.models.database import Database
@@ -16,10 +16,10 @@ class TestSales(unittest.TestCase):
         self.token = json.loads(response1.data)['access_token']
 
     def test_create_sale(self):
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igas4", password="hoort4")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        login = dict(username="Giga", password="Shoort")
+        login = dict(username="igas4", password="hoort4")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         token = json.loads(response1.data)['access_token']
         post_add = dict(category_name="phill")
@@ -39,7 +39,7 @@ class TestSales(unittest.TestCase):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         sale = dict(product_id=1, quantity=100)
@@ -53,7 +53,7 @@ class TestSales(unittest.TestCase):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         sale = dict(product_id=1)
@@ -67,7 +67,7 @@ class TestSales(unittest.TestCase):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         sale = dict(product_id=1, quantity="food")
@@ -81,7 +81,7 @@ class TestSales(unittest.TestCase):
         post_add = dict(category_name="phill")
         response1 = self.app.post('/api/v1/categories', json=post_add,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         sale = dict(product_id=1, quantity=10)

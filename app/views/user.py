@@ -87,24 +87,26 @@ def login_user():
         raise InvalidUsage("Invalid content type", 400)
 
     data = request.json
-    username = data.get("username")
-    password = data.get("password")
+    username = data.get("username").strip()
+    password = data.get("password").strip()
 
     validate = v.validate(data, login_schema)
     if not validate:
-        raise InvalidUsage({'error': v.errors}, 400)
+        return jsonify(v.errors), 400
 
     db = Database(app.config['DATABASE_URI'])
     found = db.find_user_by_username(username)
     if not found:
-        raise InvalidUsage(f"{username} doesn't exist", 400)
+        raise InvalidUsage('Username and password did not match', 400)
 
     if not sha256.verify(password, found.password):
         raise InvalidUsage('Username and password did not match', 400)
 
     user_id = found.user_id
+    status = found.is_admin
+
     access_token = create_access_token(identity=user_id, expires_delta=timedelta(hours=3))
-    return jsonify(access_token=access_token, message="login successful"), 200
+    return jsonify(access_token=access_token, message="login successful", admin=status, user_id=user_id), 200
 
 
 @user.errorhandler(InvalidUsage)

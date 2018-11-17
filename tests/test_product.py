@@ -18,7 +18,7 @@ class TestProduct(unittest.TestCase):
                                  headers={'Authorization': 'Bearer ' + self.token})
 
     def test_add_product(self):
-        post_add = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add,
                                  headers={'Authorization': 'Bearer ' + self.token})
         assert json.loads(response2.data)['message'] == 'Fahad2344 has successfully been added to inventories'
@@ -26,13 +26,13 @@ class TestProduct(unittest.TestCase):
         assert response2.headers["Content-Type"] == "application/json"
 
     def test_add_product_no_rights(self):
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa4", password="hoort3")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        login = dict(username="Giga", password="Shoort")
+        login = dict(username="igaa4", password="hoort3")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         datoken = json.loads(response1.data)['access_token']
-        post_add = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add,
                                  headers={'Authorization': 'Bearer ' + datoken})
         assert json.loads(response2.data)['error'] == "you do not have admin rights"
@@ -40,7 +40,7 @@ class TestProduct(unittest.TestCase):
         assert response2.headers["Content-Type"] == "application/json"
 
     def test_create_user_invalid_content(self):
-        post_add = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response = self.app.post('/api/v1/products', json=post_add, content_type='application/javascript',
                                  headers={'Authorization': 'Bearer ' + self.token})
         assert json.loads(response.data)['error'] == 'Invalid content type'
@@ -48,26 +48,26 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_empty_fields(self):
-        post_add = dict(product_name="Fahad2344", quantity=12, category_id=1)
+        post_add = dict(name="Fahad2344", quantity=12, category_id=1)
         response = self.app.post('/api/v1/products', json=post_add, content_type='application/json',
                                  headers={'Authorization': 'Bearer ' + self.token})
-        assert json.loads(response.data)['error'] == {'error': {'product_price': ['required field']}}
+        assert json.loads(response.data)['error']['price'] == ['required field']
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
     def test_incorrect_input(self):
-        post_add = dict(product_name=50, quantity=12, product_price=34, category_id=1)
+        post_add = dict(name=50, quantity=12, price=34, category_id=1)
         response = self.app.post('/api/v1/products', json=post_add, content_type='application/json',
                                  headers={'Authorization': 'Bearer ' + self.token})
-        assert json.loads(response.data)['error'] == {'error': {'product_name': ['must be of string type']}}
+        assert json.loads(response.data)['error']['name'] == ['must be of string type']
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
     def test_already_exists(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response1= self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        post_add = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response2 = self.app.post('/api/v1/products', json=post_add,
                                   headers={'Authorization': 'Bearer ' + self.token})
         assert json.loads(response2.data) == {'error': 'Fahad2344 already exists'}
@@ -75,10 +75,10 @@ class TestProduct(unittest.TestCase):
         assert response2.headers["Content-Type"] == "application/json"
 
     def test_modify_product(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response1 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        put_add = dict(product_name="Freddd", quantity=120, product_price=90)
+        put_add = dict(name="Freddd", quantity=120, price=90)
         response = self.app.put('/api/v1/products/1', json=put_add,
                                 headers={'Authorization': 'Bearer ' + self.token})
         assert json.loads(response.data) == {'message': 'Product is now called Freddd '}
@@ -86,13 +86,13 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_modify_product_no_rights(self):
-        post_signup = dict(name="Fahad", username="Giga", password="Shoort")
+        post_signup = dict(name="Fahad", username="igaa4", password="hoort4")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + self.token})
-        login = dict(username="Giga", password="Shoort")
+        login = dict(username="igaa4", password="hoort4")
         response1 = self.app.post('/api/v1/auth/login', json=login)
         datoken = json.loads(response1.data)['access_token']
-        put_add = dict(product_name="Freddd", quantity=120, product_price=90)
+        put_add = dict(name="Freddd", quantity=120, price=90)
         response = self.app.put('/api/v1/products/1', json=put_add,
                                 headers={'Authorization': 'Bearer ' + datoken})
         assert json.loads(response.data)['error'] == 'you do not have admin rights'
@@ -100,10 +100,10 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_modify_product_invalid_content(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12)
         response1 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        put_add = dict(product_name="Freddd", quantity=120, product_price=90)
+        put_add = dict(name="Freddd", quantity=120, price=90)
         response = self.app.put('/api/v1/products/1', json=put_add,
                                 content_type='application/javascript',
                                 headers={'Authorization': 'Bearer ' + self.token})
@@ -112,13 +112,13 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_modify_product_field_empty(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12)
         response1 = self.app.post('/api/v1/categories/1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        put_add = dict(product_name="Fahad2344", quantity=12)
+        put_add = dict(name="Fahad2344", quantity=12)
         response = self.app.put('/api/v1/products/1', json=put_add,
                                 headers={'Authorization': 'Bearer ' + self.token})
-        assert json.loads(response.data)['error']['error'] == {'product_price': ['required field']}
+        assert json.loads(response.data)['error']['error'] == {'price': ['required field']}
         assert response.headers["Content-Type"] == "application/json"
 
     def test_modify_product_invalid_input(self):
@@ -128,15 +128,15 @@ class TestProduct(unittest.TestCase):
         put_add = dict(product_name="Fahad234445", quantity="fish", product_price=12)
         response = self.app.put('/api/v1/products/1', json=put_add,
                                 headers={'Authorization': 'Bearer ' + self.token})
-        assert json.loads(response.data)['error']['error']['quantity'] == ['must be of integer type']
+        assert json.loads(response.data)['error']['error']['quantity'] == ['must be of number type']
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
     def test_modify_product_already_exists(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response1 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
-        put_add = dict(product_name="Fahad2344", quantity=120, product_price=90)
+        put_add = dict(name="Fahad2344", quantity=120, price=90)
         response = self.app.put('/api/v1/products/1', json=put_add,
                                 headers={'Authorization': 'Bearer ' + self.token})
         assert "Fahad2344 name already exists" in json.loads(response.data)['error']
@@ -144,7 +144,7 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_delete_product(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response1 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         response = self.app.delete('/api/v1/products/1', content_type='application/json',
@@ -168,7 +168,7 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_get_product_by_id(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response1 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         response = self.app.get('/api/v1/products/1', content_type='application/json',
@@ -192,7 +192,7 @@ class TestProduct(unittest.TestCase):
         assert response.headers["Content-Type"] == "application/json"
 
     def test_get_all_products(self):
-        post_add2 = dict(product_name="Fahad2344", quantity=12, product_price=12, category_id=1)
+        post_add2 = dict(name="Fahad2344", quantity=12, price=12, category_id=1)
         response1 = self.app.post('/api/v1/products', json=post_add2,
                                   headers={'Authorization': 'Bearer ' + self.token})
         response = self.app.get('/api/v1/products', content_type='application/json',
