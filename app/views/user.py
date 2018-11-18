@@ -66,7 +66,7 @@ def create_user():
 
     validate = v.validate(data, user_schema)
     if not validate:
-        raise InvalidUsage({'error': v.errors}, 400)
+        raise InvalidUsage(v.errors, 400)
 
     found = db.find_user_by_username(username)
     if found:
