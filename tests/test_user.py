@@ -40,7 +40,7 @@ class TestUser(unittest.TestCase):
         post_signup = dict(username="admin4", password="admin4")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
-        assert json.loads(response.data)['error'] == {'error': {'name': ['required field']}}
+        assert json.loads(response.data) == {'error': {'name': ['required field']}}
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 
@@ -51,7 +51,7 @@ class TestUser(unittest.TestCase):
         post_signup = dict(name=7, username="reat4", password="retty5")
         response = self.app.post('/api/v1/auth/signup', json=post_signup,
                                  headers={'Authorization': 'Bearer ' + token})
-        assert json.loads(response.data)['error'] == {'error': {'name': ['must be of string type']}}
+        assert json.loads(response.data) == {'error': {'name': ['must be of string type']}}
         assert response.status_code == 400
         assert response.headers["Content-Type"] == "application/json"
 

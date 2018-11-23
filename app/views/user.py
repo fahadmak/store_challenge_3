@@ -30,18 +30,15 @@ def give_admin_rights(user_id):
 
     data = request.json
     admin = data.get("is_admin")
-    if not isinstance(admin, bool) and admin is True:
-        raise InvalidUsage("Input should be set to true", 400)
+    if not isinstance(admin, bool):
+        raise InvalidUsage("Input should be set to boolean value", 400)
 
     attendant = db.find_user_by_id(user_id)
     if not attendant:
         raise InvalidUsage("User does not exist", 404)
 
-    if attendant.is_admin is True:
-        raise InvalidUsage(f"{attendant.username} already has admin rights", 400)
-
-    db.modify_admin_rights(user_id)
-    return jsonify({'message': f'{attendant.username} is now an admin'}), 200
+    db.modify_admin_rights(user_id, admin)
+    return jsonify({'message': f'{attendant.username} is now an admin {admin}'}), 200
 
 
 @user.route("/api/v1/auth/signup", methods=["POST"])
@@ -66,7 +63,7 @@ def create_user():
 
     validate = v.validate(data, user_schema)
     if not validate:
-        raise InvalidUsage({'error': v.errors}, 400)
+        raise InvalidUsage(v.errors, 400)
 
     found = db.find_user_by_username(username)
     if found:
@@ -107,6 +104,52 @@ def login_user():
 
     access_token = create_access_token(identity=user_id, expires_delta=timedelta(hours=3))
     return jsonify(access_token=access_token, message="login successful", admin=status, user_id=user_id), 200
+
+
+@user.route("/api/v1/auth/users", methods=["GET"])
+@jwt_required
+def get_users():
+    """A method gets all users"""
+    if request.content_type != 'application/json':
+        raise InvalidUsage("Invalid content type", 400)
+
+    current_user_id = get_jwt_identity()
+
+    db = Database(app.config['DATABASE_URI'])
+
+    user = db.find_user_by_id(current_user_id)
+
+    if user.is_admin is False:
+        raise InvalidUsage("you do not have admin rights", 401)
+
+    users = db.get_all_users()
+    if not users:
+        raise InvalidUsage("They are currently no users")
+
+    return jsonify({'users': users}), 200
+
+
+@user.route("/api/v1/auth/users/<int:user_id>", methods=["DELETE"])
+@jwt_required
+def delete_user(user_id):
+    """A method deletes product stored in the database"""
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+
+    db = Database(app.config['DATABASE_URI'])
+
+    current_user_id = get_jwt_identity()
+    user = db.find_user_by_id(current_user_id)
+    if not user.is_admin:
+        raise InvalidUsage("you do not have admin rights", 401)
+
+    item = db.find_user_by_id(user_id)
+    if not item:
+        raise InvalidUsage("user does not exist", 404)
+
+    user_name, user_id = item.username, item.user_id
+    db.delete_user(user_id)
+    return jsonify({'message': f'{user_name} has been deleted'}), 200
 
 
 @user.errorhandler(InvalidUsage)
