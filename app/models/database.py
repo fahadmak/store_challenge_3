@@ -68,7 +68,7 @@ class Database:
                 """,
                 """
                 CREATE TABLE IF NOT EXISTS sales (
-                    sale_id SERIAL PRIMARY KEY NOT NULL,
+                    sale_id INTEGER PRIMARY KEY NOT NULL,
                     sale_date TIMESTAMPTZ DEFAULT NOW(),
                     total INTEGER NOT NULL,
                     user_id INTEGER NOT NULL,
@@ -92,9 +92,9 @@ class Database:
                 """,
                 """
                 INSERT INTO users (name, username, password, is_admin) 
-                SELECT * FROM (SELECT 'admin', 'admin', '{}', TRUE) 
-                AS tmp WHERE NOT EXISTS (SELECT name FROM users WHERE username = 'admin') LIMIT 1;
-                """.format(sha256.hash('admin'))
+                SELECT * FROM (SELECT 'admin34', 'admin34', '{}', TRUE) 
+                AS tmp WHERE NOT EXISTS (SELECT name FROM users WHERE username = 'admin34') LIMIT 1;
+                """.format(sha256.hash('admin34'))
                 )
 
             for command in commands:
@@ -119,6 +119,13 @@ class Database:
         cur.execute(query)
         self.conn.commit()
 
+    def delete_user(self, user_id):
+        """Insert an item in a respective table"""
+        query = f"DELETE FROM users WHERE user_id = {user_id};"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        self.conn.commit()
+
     def find_user_by_username(self, username):
         """select an item by id in a respective table"""
         query = f"SELECT * FROM users WHERE username = '{username}'"
@@ -139,12 +146,26 @@ class Database:
             user = User(result[0], result[1], result[2], result[3], result[4], result[5])
             return user
 
-    def modify_admin_rights(self, user_id):
+    def modify_admin_rights(self, user_id, status):
         """Insert an item in a respective table"""
-        query = f"UPDATE  users SET is_admin = TRUE WHERE user_id = {user_id};"
+        query = f"UPDATE  users SET is_admin = {status} WHERE user_id = {user_id};"
         cur = self.conn.cursor()
         cur.execute(query)
         self.conn.commit()
+
+    def get_all_users(self):
+        """select all users in users table"""
+        query = f"SELECT * FROM users"
+        cur = self.conn.cursor()
+        cur.execute(query)
+        results = cur.fetchall()
+        if not results:
+            return False
+        users = []
+        for result in results:
+            user = User(result[0], result[1], result[2], result[3], result[4], result[5]).to_json()
+            users.append(user)
+        return users
 
     # Queries for the category table
     def add_category(self, category_name, user_id):
@@ -269,10 +290,10 @@ class Database:
         return products
 
     # Queries for the sale table
-    def add_sale(self, total, user_id):
+    def add_sale(self, total, user_id, sale_id):
         """Insert an sale in a respective products table"""
-        query = f"INSERT INTO sales(total, user_id) " \
-                f"VALUES('{total}', '{user_id}');"
+        query = f"INSERT INTO sales(total, user_id, sale_id) " \
+                f"VALUES('{total}', '{user_id}', '{sale_id}');"
         cur = self.conn.cursor()
         cur.execute(query)
         self.conn.commit()
@@ -325,7 +346,11 @@ class Database:
         query = "SELECT sale_id FROM sales;"
         cur = self.conn.cursor()
         cur.execute(query)
-        results = cur.fetchone()
-        if results:
-            return results
+        results = cur.fetchall()
+        sale_ids = []
+        for result in results:
+            sale_ids.append(result[0])
+            print(results)
+            print(sale_ids)
+        return sale_ids
 
