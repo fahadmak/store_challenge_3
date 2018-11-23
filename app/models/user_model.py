@@ -39,7 +39,8 @@ class User:
             'user_id': self.user_id,
             'name': self.name,
             'username': self.username,
-            'password': self.password
+            'password': self.password,
+            'is_admin': self.is_admin
         }
         return user
 
