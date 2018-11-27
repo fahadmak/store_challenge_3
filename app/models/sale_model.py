@@ -24,7 +24,7 @@ class Sale:
         to_json(self)
             Converts the sale record instance to a dictionary
     """
-    def __init__(self, sale_id, total, sale_date, user_id):
+    def __init__(self, sale_id, sale_date, total, user_id):
         self.sale_id = sale_id
         self.user_id = user_id
         self.sale_date = sale_date

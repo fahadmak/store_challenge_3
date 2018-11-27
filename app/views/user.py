@@ -152,6 +152,22 @@ def delete_user(user_id):
     return jsonify({'message': f'{user_name} has been deleted'}), 200
 
 
+@user.route("/api/v1/users/<int:user_id>", methods=["GET"])
+@jwt_required
+def get_user_by_user_id(user_id):
+    """A method adds product instance to products list"""
+
+    if request.content_type != "application/json":
+        raise InvalidUsage("Invalid content type", 400)
+
+    db = Database(app.config['DATABASE_URI'])
+
+    found_user = db.find_user_by_id(user_id)
+    if not found_user:
+        raise InvalidUsage("user does not exist", 400)
+    return jsonify({'user': found_user.to_json()}), 200
+
+
 @user.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())

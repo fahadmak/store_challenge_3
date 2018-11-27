@@ -127,7 +127,7 @@ def get_all_category():
 
     found = db.get_all_categories()
     if not found:
-        raise InvalidUsage("Category does not exist", 404)
+        raise InvalidUsage("No categories does not exist", 404)
 
     return jsonify({"categories": found}), 200
 
