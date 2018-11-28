@@ -305,7 +305,7 @@ class Database:
         cur.execute(query)
         result = cur.fetchone()
         if result:
-            sale = Sale(result[0], result[1], result[2], result[3])
+            sale = Sale(result[0], result[1], result[2], result[3]).to_json()
             return sale
 
     def find_sale_by_user_id(self, user_id):
@@ -313,10 +313,13 @@ class Database:
         query = f"SELECT * FROM sales WHERE user_id = {user_id}"
         cur = self.conn.cursor()
         cur.execute(query)
-        result = cur.fetchone()
-        if result:
-            sale = Sale(result[0], result[1], result[2], result[3])
-            return sale
+        results = cur.fetchall()
+        sales = []
+        for result in results:
+            sale = Sale(result[0], result[1], result[2], result[3]).to_json()
+            sales.append(sale)
+        print(sales)
+        return sales
 
     def get_all_sales(self):
         """select all sales records in sales table"""
