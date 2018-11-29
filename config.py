@@ -3,7 +3,7 @@ class Config(object):
     DEBUG = False
     CSRF_ENABLED = True
     JWT_SECRET_KEY = "bigsecret"
-    DATABASE_URI = 'postgres://tquvntrciomlye:0e9dfeca2f405e0f2193a3b7fbc6f316dd4f63caad0fdf9b5a4406bcb2fbc585@ec2-23-21-171-249.compute-1.amazonaws.com:5432/d1akcs0pg5u19u'
+    DATABASE_URI = 'postgres://vhgxtqnhjxsisd:224afcd6908b388a13a86418e71a7f5f66f0e33d406e8b46d82d25f088ef00c2@ec2-54-225-110-156.compute-1.amazonaws.com:5432/d2qnpu0duojjn'
 
 
 class DevelopmentConfig(Config):
