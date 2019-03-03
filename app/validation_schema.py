@@ -2,12 +2,12 @@ import string
 
 letters = tuple(string.ascii_letters)
 
-user_schema = {'name': {'required': True, 'min': 6, 'type': 'string', 'regex': '^[A-Za-z0-9]+$'},
-               'username': {'type': 'string', 'min': 7, 'required': True, 'regex': '^[a-z0-9]{5,15}$'},
-               'password': {'type': 'string', 'required': True, 'regex': '^[a-z0-9]{5,15}$'}}
+user_schema = {'name': {'required': True, 'min': 6, 'type': 'string'},
+               'username': {'type': 'string', 'min': 7, 'required': True},
+               'password': {'type': 'string', 'required': True}}
 
-login_schema = {'username': {'type': 'string', 'required': True, 'regex': '^[a-z0-9_@]{5,15}$'},
-                'password': {'type': 'string', 'required': True, 'regex': '^[a-z0-9_@]{5,15}$'}}
+login_schema = {'username': {'type': 'string', 'min': 7, 'required': True},
+                'password': {'type': 'string', 'required': True}}
 
 product_schema = {'name': {'type': 'string', 'required': True, 'regex': '^[A-Za-z0-9]+$'},
                   'quantity': {'type': 'number', 'min': 1, 'required': True, 'forbidden': [' ', ""]},
